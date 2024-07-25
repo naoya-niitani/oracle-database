@@ -59,7 +59,8 @@ $ docker-compose up -d --build
  Container oracle-database-19.3.0-ee  Started
 ```
 
-### 7. initiale setup
+**initiale setup log**
+
 ```log
 2024-06-16 13:57:19 ORACLE EDITION: ENTERPRISE
 2024-06-16 13:57:20 
@@ -248,3 +249,190 @@ $ docker-compose up -d --build
 2024-06-16 14:27:14 TABLE SYS.WRP$_REPORTS_DETAILS: ADDED INTERVAL PARTITION SYS_P202 (5281) VALUES LESS THAN (TO_DATE(' 2024-06-17 01:00:00', 'SYYYY-MM-DD HH24:MI:SS', 'NLS_CALENDAR=GREGORIAN'))
 2024-06-16 14:27:14 TABLE SYS.WRP$_REPORTS_TIME_BANDS: ADDED INTERVAL PARTITION SYS_P205 (5280) VALUES LESS THAN (TO_DATE(' 2024-06-16 01:00:00', 'SYYYY-MM-DD HH24:MI:SS', 'NLS_CALENDAR=GREGORIAN'))
 ```
+
+## option - X Server setup
+ホストOS上に X Server を立てていく
+
+### 1. `VcXsrv` をインストール
+
+- https://sourceforge.net/projects/vcxsrv/
+
+**windows10 で利用できる X Server**
+
+| ソフトウェア | 概要 |
+| -- | -- |
+| VcXsrv | フリーのXサーバ |
+| Cygwin/X | フリーのXサーバ。UNIX互換環境のCygwinの一つとして提供されている |
+| Xming | 以前は無償だったXサーバ。現在では利用形態に応じていくらか支払う必要がある |
+| MobaXterm | sshクライアント／ターミナル機能などが統合されているXサーバ製品。機能限定の無償版もある |
+| X410 | Microsoft Storeで販売されている有償のXサーバ。ストアアプリなので、導入やバージョンアップなどが容易 |
+
+### 2. oracle linux に xeyes X Client をインストール
+
+```sh
+$ docker exec -u root -ti oracle-database bash
+bash-4.2# yum install -y xeyes
+Loaded plugins: ovl
+ol7_latest                                                                        | 3.6 kB  00:00:00
+(1/3): ol7_latest/x86_64/group_gz                                                 | 136 kB  00:00:00
+(2/3): ol7_latest/x86_64/updateinfo                                               | 3.6 MB  00:00:00
+(3/3): ol7_latest/x86_64/primary_db                                               |  52 MB  00:00:03
+Resolving Dependencies
+--> Running transaction check
+---> Package xorg-x11-apps.x86_64 0:7.7-7.el7 will be installed
+--> Processing Dependency: libpng15.so.15(PNG15_0)(64bit) for package: xorg-x11-apps-7.7-7.el7.x86_64
+--> Processing Dependency: libXaw.so.7()(64bit) for package: xorg-x11-apps-7.7-7.el7.x86_64
+--> Processing Dependency: libXcursor.so.1()(64bit) for package: xorg-x11-apps-7.7-7.el7.x86_64
+--> Processing Dependency: libXft.so.2()(64bit) for package: xorg-x11-apps-7.7-7.el7.x86_64
+--> Processing Dependency: libfontconfig.so.1()(64bit) for package: xorg-x11-apps-7.7-7.el7.x86_64
+--> Processing Dependency: libfontenc.so.1()(64bit) for package: xorg-x11-apps-7.7-7.el7.x86_64
+--> Processing Dependency: libfreetype.so.6()(64bit) for package: xorg-x11-apps-7.7-7.el7.x86_64
+--> Processing Dependency: libpng15.so.15()(64bit) for package: xorg-x11-apps-7.7-7.el7.x86_64
+--> Processing Dependency: libxkbfile.so.1()(64bit) for package: xorg-x11-apps-7.7-7.el7.x86_64
+--> Running transaction check
+---> Package fontconfig.x86_64 0:2.13.0-4.3.el7 will be installed
+--> Processing Dependency: dejavu-sans-fonts for package: fontconfig-2.13.0-4.3.el7.x86_64
+--> Processing Dependency: fontpackages-filesystem for package: fontconfig-2.13.0-4.3.el7.x86_64
+---> Package freetype.x86_64 0:2.8-14.el7_9.1 will be installed
+---> Package libXaw.x86_64 0:1.0.13-4.el7 will be installed
+--> Processing Dependency: libXpm.so.4()(64bit) for package: libXaw-1.0.13-4.el7.x86_64
+---> Package libXcursor.x86_64 0:1.1.15-1.el7 will be installed
+--> Processing Dependency: libXfixes.so.3()(64bit) for package: libXcursor-1.1.15-1.el7.x86_64
+---> Package libXft.x86_64 0:2.3.2-2.el7 will be installed
+---> Package libfontenc.x86_64 0:1.1.3-3.el7 will be installed
+---> Package libpng.x86_64 2:1.5.13-8.el7 will be installed
+---> Package libxkbfile.x86_64 0:1.0.9-3.el7 will be installed
+--> Running transaction check
+---> Package dejavu-sans-fonts.noarch 0:2.33-6.el7 will be installed
+--> Processing Dependency: dejavu-fonts-common = 2.33-6.el7 for package: dejavu-sans-fonts-2.33-6.el7.noa
+rch
+---> Package fontpackages-filesystem.noarch 0:1.44-8.el7 will be installed
+---> Package libXfixes.x86_64 0:5.0.3-1.el7 will be installed
+---> Package libXpm.x86_64 0:3.5.12-2.el7_9 will be installed
+--> Running transaction check
+---> Package dejavu-fonts-common.noarch 0:2.33-6.el7 will be installed
+--> Finished Dependency Resolution
+
+Dependencies Resolved
+
+=========================================================================================================
+ Package                           Arch             Version                   Repository            Size
+=========================================================================================================
+Installing:
+ xorg-x11-apps                     x86_64           7.7-7.el7                 ol7_latest           307 k
+Installing for dependencies:
+ dejavu-fonts-common               noarch           2.33-6.el7                ol7_latest            64 k
+ dejavu-sans-fonts                 noarch           2.33-6.el7                ol7_latest           1.4 M
+ fontconfig                        x86_64           2.13.0-4.3.el7            ol7_latest           254 k
+ fontpackages-filesystem           noarch           1.44-8.el7                ol7_latest           9.4 k
+ freetype                          x86_64           2.8-14.el7_9.1            ol7_latest           380 k
+ libXaw                            x86_64           1.0.13-4.el7              ol7_latest           191 k
+ libXcursor                        x86_64           1.1.15-1.el7              ol7_latest            30 k
+ libXfixes                         x86_64           5.0.3-1.el7               ol7_latest            18 k
+ libXft                            x86_64           2.3.2-2.el7               ol7_latest            58 k
+ libXpm                            x86_64           3.5.12-2.el7_9            ol7_latest            55 k
+ libfontenc                        x86_64           1.1.3-3.el7               ol7_latest            30 k
+ libpng                            x86_64           2:1.5.13-8.el7            ol7_latest           212 k
+ libxkbfile                        x86_64           1.0.9-3.el7               ol7_latest            82 k
+
+Transaction Summary
+=========================================================================================================
+Install  1 Package (+13 Dependent packages)
+
+Total download size: 3.1 M
+Installed size: 9.0 M
+Downloading packages:
+(1/14): dejavu-fonts-common-2.33-6.el7.noarch.rpm                                 |  64 kB  00:00:00
+(2/14): fontconfig-2.13.0-4.3.el7.x86_64.rpm                                      | 254 kB  00:00:00
+(3/14): fontpackages-filesystem-1.44-8.el7.noarch.rpm                             | 9.4 kB  00:00:00
+(4/14): freetype-2.8-14.el7_9.1.x86_64.rpm                                        | 380 kB  00:00:00
+(5/14): dejavu-sans-fonts-2.33-6.el7.noarch.rpm                                   | 1.4 MB  00:00:00
+(6/14): libXcursor-1.1.15-1.el7.x86_64.rpm                                        |  30 kB  00:00:01
+(7/14): libXfixes-5.0.3-1.el7.x86_64.rpm                                          |  18 kB  00:00:00
+(8/14): libXaw-1.0.13-4.el7.x86_64.rpm                                            | 191 kB  00:00:01
+(9/14): libXpm-3.5.12-2.el7_9.x86_64.rpm                                          |  55 kB  00:00:00
+(10/14): libfontenc-1.1.3-3.el7.x86_64.rpm                                        |  30 kB  00:00:00
+(11/14): libpng-1.5.13-8.el7.x86_64.rpm                                           | 212 kB  00:00:00
+(12/14): libXft-2.3.2-2.el7.x86_64.rpm                                            |  58 kB  00:00:01
+(13/14): libxkbfile-1.0.9-3.el7.x86_64.rpm                                        |  82 kB  00:00:01
+(14/14): xorg-x11-apps-7.7-7.el7.x86_64.rpm                                       | 307 kB  00:00:01
+---------------------------------------------------------------------------------------------------------
+Total                                                                    555 kB/s | 3.1 MB  00:00:05
+Running transaction check
+Running transaction test
+Transaction test succeeded
+Running transaction
+  Installing : fontpackages-filesystem-1.44-8.el7.noarch                                            1/14
+  Installing : 2:libpng-1.5.13-8.el7.x86_64                                                         2/14
+  Installing : freetype-2.8-14.el7_9.1.x86_64                                                       3/14
+  Installing : dejavu-fonts-common-2.33-6.el7.noarch                                                4/14
+  Installing : dejavu-sans-fonts-2.33-6.el7.noarch                                                  5/14
+  Installing : fontconfig-2.13.0-4.3.el7.x86_64                                                     6/14
+  Installing : libXft-2.3.2-2.el7.x86_64                                                            7/14
+  Installing : libfontenc-1.1.3-3.el7.x86_64                                                        8/14
+  Installing : libXpm-3.5.12-2.el7_9.x86_64                                                         9/14
+  Installing : libXaw-1.0.13-4.el7.x86_64                                                          10/14
+  Installing : libXfixes-5.0.3-1.el7.x86_64                                                        11/14
+  Installing : libXcursor-1.1.15-1.el7.x86_64                                                      12/14
+  Installing : libxkbfile-1.0.9-3.el7.x86_64                                                       13/14
+  Installing : xorg-x11-apps-7.7-7.el7.x86_64                                                      14/14
+  Verifying  : fontconfig-2.13.0-4.3.el7.x86_64                                                     1/14
+  Verifying  : libxkbfile-1.0.9-3.el7.x86_64                                                        2/14
+  Verifying  : libXaw-1.0.13-4.el7.x86_64                                                           3/14
+  Verifying  : libXfixes-5.0.3-1.el7.x86_64                                                         4/14
+  Verifying  : dejavu-fonts-common-2.33-6.el7.noarch                                                5/14
+  Verifying  : dejavu-sans-fonts-2.33-6.el7.noarch                                                  6/14
+  Verifying  : libXcursor-1.1.15-1.el7.x86_64                                                       7/14
+  Verifying  : 2:libpng-1.5.13-8.el7.x86_64                                                         8/14
+  Verifying  : libXpm-3.5.12-2.el7_9.x86_64                                                         9/14
+  Verifying  : libXft-2.3.2-2.el7.x86_64                                                           10/14
+  Verifying  : libfontenc-1.1.3-3.el7.x86_64                                                       11/14
+  Verifying  : freetype-2.8-14.el7_9.1.x86_64                                                      12/14
+  Verifying  : fontpackages-filesystem-1.44-8.el7.noarch                                           13/14
+  Verifying  : xorg-x11-apps-7.7-7.el7.x86_64                                                      14/14
+
+Installed:
+  xorg-x11-apps.x86_64 0:7.7-7.el7
+
+Dependency Installed:
+  dejavu-fonts-common.noarch 0:2.33-6.el7           dejavu-sans-fonts.noarch 0:2.33-6.el7
+  fontconfig.x86_64 0:2.13.0-4.3.el7                fontpackages-filesystem.noarch 0:1.44-8.el7
+  freetype.x86_64 0:2.8-14.el7_9.1                  libXaw.x86_64 0:1.0.13-4.el7
+  libXcursor.x86_64 0:1.1.15-1.el7                  libXfixes.x86_64 0:5.0.3-1.el7
+  libXft.x86_64 0:2.3.2-2.el7                       libXpm.x86_64 0:3.5.12-2.el7_9
+  libfontenc.x86_64 0:1.1.3-3.el7                   libpng.x86_64 2:1.5.13-8.el7
+  libxkbfile.x86_64 0:1.0.9-3.el7
+
+Complete!
+```
+
+### 3. ip 設定
+```sh
+$ ipconfig
+
+Windows IP Configuration
+
+Ethernet adapter vEthernet (WSL):
+   IPv4 Address. . . . . . . . . . . : 111.222.333.444
+
+```
+
+OSホストIPを oracle-database コンテナ `$DISPLAY` 環境変数に設定
+
+```conf
+DISPLAY=<host-ip>:<display-port>
+```
+
+```sh
+bash-4.2# export DISPLAY=111.222.333.444:0.0
+bash-4.2# echo $DISPLAY
+111.222.333.444:0.0
+```
+
+`xeyes` を起動して挙動確認
+
+```sh
+bash-4.2# xeyes
+```
+
+![image](https://github.com/user-attachments/assets/28dcfcc3-e9cf-4584-89af-4e2f072dea74)
