@@ -435,4 +435,4 @@ bash-4.2# echo $DISPLAY
 bash-4.2# xeyes
 ```
 
-![image](https://github.com/user-attachments/assets/28dcfcc3-e9cf-4584-89af-4e2f072dea74)
+![image](https://github.com/user-attachments/assets/979235d6-5a51-4487-8ae1-30a26236c278)
