@@ -1,0 +1,6 @@
+dump
+oradata
+startup
+19.3.0
+.env.oracle-linux
+buildContainerImage.sh

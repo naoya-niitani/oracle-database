@@ -1,0 +1,19 @@
+services:
+  oracle-database-19.3.0-ee:
+    image: oracle/database:19.3.0-ee
+    container_name: oracle-database
+    ports:
+      - 1521:1521
+      - 5500:5500
+      - 8080:8080
+    volumes:
+      - ./dump:/opt/oracle/dump
+      - ./oradata:/opt/oracle/oradata
+      - ./startup:/opt/oracle/scripts/startup
+    environment:
+      ORACLE_SID: ORCLCDB
+      ORACLE_PDB: ORCLPDB1
+      ORACLE_PWD: oracle
+
+# volumes:
+#   oradata:
